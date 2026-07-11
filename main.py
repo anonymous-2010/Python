@@ -144,17 +144,34 @@ def process_raw(raw: dict) -> dict:
                 "qualification": t.get("qualification"),
             })
 
-    user_name = deep_get(u, "name", "displayName") or ((u.get("firstName") or "") + " " + (u.get("lastName") or "")).strip() or None
+    user_name = ((u.get("firstName") or "") + " " + (u.get("lastName") or "")).strip() or None
     user_id = u.get("_id") or u.get("userId") or u.get("id")
-    user_phone = deep_get(u, "phone", "mobile", "phoneNumber", "contactNumber", "mobileNumber")
+    user_phone = u.get("primaryNumber") or u.get("phone") or u.get("mobile") or u.get("phoneNumber")
     if isinstance(user_phone, dict):
-        parts = [user_phone.get("countryCode"), user_phone.get("number"), user_phone.get("mobile"), user_phone.get("phone")]
-        user_phone = " ".join(p for p in parts if p) or None
-    user_city = deep_get(u, "city", "location", "state", "address")
+        user_phone = user_phone.get("number") or user_phone.get("mobile") or ""
+    if user_phone and isinstance(user_phone, str):
+        user_phone = user_phone.strip()
+        if not user_phone.startswith("+") and u.get("countryCode"):
+            user_phone = f"{u['countryCode']} {user_phone}"
+    elif user_phone is not None:
+        user_phone = str(user_phone)
+    else:
+        user_phone = None
+    address = u.get("address") or {}
+    user_city = address.get("city") or u.get("city")
     if isinstance(user_city, dict):
         parts = [user_city.get("city"), user_city.get("state"), user_city.get("pincode")]
         user_city = ", ".join(p for p in parts if p) or None
-    user_email = deep_get(u, "email", "emailId")
+    elif user_city:
+        state = address.get("state") or ""
+        pincode = address.get("pincode") or ""
+        parts = [user_city, state, pincode]
+        user_city = ", ".join(p for p in parts if p)
+    user_email = u.get("email") or u.get("emailId")
+    user_image = None
+    img = u.get("imageId") or {}
+    if img.get("key"):
+        user_image = (img.get("baseUrl") or "https://static.pw.live/") + img["key"]
 
     return {
         "_lectureState": "open",
@@ -190,6 +207,7 @@ def process_raw(raw: dict) -> dict:
             "phone": user_phone,
             "city": user_city,
             "email": user_email,
+            "image": user_image,
         },
     }
 
