@@ -28,7 +28,7 @@ const statusMap = {
 export default function Header({ connected }: Props) {
   const s = statusMap[connected];
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#070708]/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#070708]">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3.5 sm:px-6">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 shadow-lg shadow-emerald-500/20">
