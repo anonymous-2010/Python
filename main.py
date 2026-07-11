@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse, StreamingResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import json, asyncio, uvicorn, os
 from datetime import datetime
 from pathlib import Path
@@ -9,6 +10,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI(title="PW Schedule Sync Server")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 history: list[dict] = []
 latest: dict = {}
