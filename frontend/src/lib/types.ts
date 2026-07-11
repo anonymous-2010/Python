@@ -3,8 +3,15 @@ export interface Teacher {
   name: string;
   subject: string;
   image: string | null;
+  subjectImage?: string | null;
   experience?: string;
   qualification?: string;
+}
+
+export interface Fee {
+  amount: number;
+  discount: number;
+  total: number;
 }
 
 export interface Batch {
@@ -17,6 +24,14 @@ export interface Batch {
   status: string;
   startDate: string;
   endDate: string;
+  batchCode?: string;
+  byName?: string;
+  isPurchased?: boolean;
+  subjectCount?: number;
+  program?: string;
+  previewImage?: string | null;
+  fee?: Fee | null;
+  description?: string | null;
 }
 
 export interface User {

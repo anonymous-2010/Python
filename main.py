@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import PlainTextResponse, StreamingResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-import json, asyncio, uvicorn, os
+import json, asyncio, uvicorn, os, re
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
@@ -47,6 +47,25 @@ def deep_get(obj, *keys, default=None):
                 if k in v and v[k] is not None and v[k] != "":
                     return v[k]
     return default
+
+
+def build_image(img):
+    if not isinstance(img, dict):
+        return None
+    if img.get("url"):
+        return img["url"]
+    if img.get("key"):
+        return (img.get("baseUrl") or "https://static.pw.live/") + img["key"]
+    return None
+
+
+def strip_html(html):
+    if not html:
+        return None
+    text = re.sub(r"<[^>]+>", " ", str(html))
+    text = re.sub(r"&[a-zA-Z#0-9]+;", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text or None
 
 
 def process_raw(raw: dict) -> dict:
@@ -131,15 +150,18 @@ def process_raw(raw: dict) -> dict:
 
     all_teachers = []
     for subj in (b.get("subjects") or []):
+        simg = subj.get("imageId") or {}
+        subject_image = build_image(simg)
         for t in (subj.get("teacherIds") or []):
             name = ((t.get("firstName") or "") + " " + (t.get("lastName") or "")).strip()
             img = t.get("imageId") or {}
-            image = ((img.get("baseUrl") or "https://static.pw.live/") + img["key"]) if img.get("key") else None
+            image = build_image(img)
             all_teachers.append({
                 "id": t.get("_id"),
                 "name": name,
                 "subject": subj.get("subject") or "",
                 "image": image,
+                "subjectImage": subject_image,
                 "experience": t.get("experience"),
                 "qualification": t.get("qualification"),
             })
@@ -199,6 +221,14 @@ def process_raw(raw: dict) -> dict:
             "status": batch_status,
             "startDate": start_date,
             "endDate": end_date,
+            "batchCode": b.get("batchCode"),
+            "byName": b.get("byName"),
+            "isPurchased": b.get("isPurchased"),
+            "subjectCount": len(b.get("subjects") or []),
+            "program": (b.get("program") or {}).get("name"),
+            "previewImage": build_image(b.get("previewImage")),
+            "fee": b.get("fee"),
+            "description": strip_html(b.get("description")),
         },
         "teachers": all_teachers,
         "user": {

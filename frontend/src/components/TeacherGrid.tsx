@@ -18,7 +18,7 @@ export default function TeacherGrid({ teachers }: Props) {
 
       <div className="divide-y divide-white/[0.06]">
         {teachers.map((t) => (
-          <div key={t.id} className="flex items-center gap-4 py-3.5">
+          <div key={t.id} className="flex items-center gap-4 py-4">
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
               {t.image ? (
                 <img src={t.image} alt={t.name} className="h-full w-full object-cover" />
@@ -33,9 +33,24 @@ export default function TeacherGrid({ teachers }: Props) {
                 </div>
               )}
             </div>
-            <div className="min-w-0">
-              <div className="truncate text-lg font-semibold text-white">{t.name}</div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="truncate text-lg font-semibold text-white">{t.name}</span>
+                {t.subjectImage && (
+                  <img
+                    src={t.subjectImage}
+                    alt={t.subject}
+                    className="h-6 w-6 shrink-0 rounded-md border border-white/10 object-cover"
+                  />
+                )}
+              </div>
               <div className="truncate text-sm text-zinc-500">{t.subject}</div>
+              {t.qualification && (
+                <div className="mt-0.5 truncate text-xs text-zinc-500">{t.qualification}</div>
+              )}
+              {t.experience && (
+                <div className="text-xs text-zinc-600">{t.experience} yrs experience</div>
+              )}
             </div>
           </div>
         ))}
