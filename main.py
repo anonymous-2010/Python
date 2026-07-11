@@ -1,38 +1,14 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import PlainTextResponse, StreamingResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse, StreamingResponse, JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 import json, asyncio, uvicorn, os
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
 
-ALLOWED_ORIGINS = [o.strip() for o in os.getenv("FRONTEND_URL", "").split(",") if o.strip()]
-
 app = FastAPI(title="PW Schedule Sync Server")
-
-
-@app.middleware("http")
-async def block_non_extension(request: Request, call_next):
-    if request.url.path not in ("/status",):
-        origin = request.headers.get("origin", "")
-        referer = request.headers.get("referer", "")
-        is_extension = origin.startswith("chrome-extension://") or "chrome-extension://" in referer
-        is_frontend = (
-            origin.startswith("http://localhost") or origin.startswith("http://127.0.0.1")
-            or referer.startswith("http://localhost") or referer.startswith("http://127.0.0.1")
-            or origin in ALLOWED_ORIGINS or referer.startswith(tuple(ALLOWED_ORIGINS))
-        )
-        if not is_extension and not is_frontend:
-            return JSONResponse("You bastard get lost", status_code=403)
-    return await call_next(request)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 history: list[dict] = []
 latest: dict = {}
@@ -269,6 +245,19 @@ async def reset_counter():
 @app.get("/api/history")
 async def get_history():
     return history[-50:]
+
+
+STATIC_DIR = Path(__file__).parent / "frontend" / "dist"
+
+if STATIC_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=str(STATIC_DIR / "assets")), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        file_path = STATIC_DIR / full_path
+        if file_path.is_file():
+            return FileResponse(str(file_path))
+        return FileResponse(str(STATIC_DIR / "index.html"))
 
 
 if __name__ == "__main__":
