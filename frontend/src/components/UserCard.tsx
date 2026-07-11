@@ -10,12 +10,20 @@ export default function UserCard({ user }: Props) {
 
   return (
     <div className="card-glass rounded-2xl p-5 space-y-3">
-      <div className="flex items-center gap-2 text-white text-sm font-medium">
-        <UserCircle className="w-4 h-4 text-mint" />
-        User Info
+      <div className="flex items-center gap-3">
+        {user.image ? (
+          <img src={user.image} alt={user.name} className="w-10 h-10 rounded-xl object-cover border border-white/10" />
+        ) : (
+          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+            <UserCircle className="w-5 h-5 text-mint" />
+          </div>
+        )}
+        <div>
+          <div className="text-white text-sm font-medium">User Info</div>
+          <div className="text-gray-500 text-xs">{user.name || '--'}</div>
+        </div>
       </div>
       <div className="space-y-2 text-xs">
-        <Row icon={<UserCircle className="w-3.5 h-3.5" />} label="Name" value={user.name} />
         <Row icon={<span className="font-mono text-[10px]">ID</span>} label="User ID" value={user.userId} />
         <Row icon={<Mail className="w-3.5 h-3.5" />} label="Email" value={user.email} />
         <Row icon={<Phone className="w-3.5 h-3.5" />} label="Phone" value={user.phone} />

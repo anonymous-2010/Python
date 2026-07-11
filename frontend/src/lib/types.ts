@@ -25,6 +25,7 @@ export interface User {
   phone: string;
   city: string;
   email: string;
+  image: string | null;
 }
 
 export interface LectureTeacher {
