@@ -61,15 +61,15 @@ export default function App() {
       <Sidebar active={tab} onChange={setTab} connected={connected} />
 
       <main className="flex-1">
-        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 md:py-8">
+        <div className="mx-auto w-full max-w-4xl px-5 py-7 sm:px-7 md:py-9">
           {noLecture ? (
             <NoLecture />
           ) : (
-            <div className="space-y-5 fade-in" key={tab}>
+            <div className="space-y-6 fade-in" key={tab}>
               {tab === 'overview' && (
                 <>
                   <LectureCard data={data} />
-                  <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     <UserCard user={data.user} />
                     <BatchCard batch={data.batch} />
                   </div>
@@ -81,7 +81,7 @@ export default function App() {
           )}
         </div>
 
-        <footer className="mx-auto w-full max-w-3xl px-4 pb-8 pt-2 text-center text-xs text-zinc-600 sm:px-6">
+        <footer className="mx-auto w-full max-w-4xl px-5 pb-9 pt-2 text-center text-xs text-zinc-600 sm:px-7">
           PW Sync · {connected === 'live' ? 'Streaming live' : 'Reconnecting…'}
         </footer>
       </main>

@@ -60,8 +60,8 @@ export default function LectureCard({ data }: Props) {
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-semibold leading-snug text-white">{data.topic || '--'}</h2>
-            <p className="mt-1 text-sm text-zinc-400">
+            <h2 className="text-xl font-semibold leading-snug text-white">{data.topic || '--'}</h2>
+            <p className="mt-1.5 text-[15px] text-zinc-400">
               {data.teacherName || 'Unknown teacher'}
               {data.subject?.name ? ` · ${data.subject.name}` : ''}
             </p>
