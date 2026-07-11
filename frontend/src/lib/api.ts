@@ -10,13 +10,3 @@ export async function fetchLatest() {
   const res = await fetch(API.latest);
   return res.json();
 }
-
-export async function fetchHistory() {
-  const res = await fetch(API.history);
-  return res.json();
-}
-
-export async function resetCounter() {
-  const res = await fetch(API.counterReset, { method: 'POST' });
-  return res.json();
-}

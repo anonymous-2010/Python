@@ -9,35 +9,45 @@ export default function BatchCard({ batch }: Props) {
   if (!batch) return null;
 
   const badges = [
-    batch.class && { label: batch.class, cls: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-    batch.exam && { label: batch.exam, cls: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-    batch.language && { label: batch.language, cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-    batch.mode && { label: batch.mode, cls: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' },
-    batch.status && { label: batch.status, cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+    batch.class && { label: batch.class, cls: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
+    batch.exam && { label: batch.exam, cls: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
+    batch.language && { label: batch.language, cls: 'bg-amber-500/10 text-amber-300 border-amber-500/20' },
+    batch.mode && { label: batch.mode, cls: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
+    batch.status && { label: batch.status, cls: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
   ].filter(Boolean) as { label: string; cls: string }[];
 
   return (
-    <div className="card-glass rounded-2xl p-5 space-y-3">
-      <div className="flex items-center gap-2 text-white text-sm font-medium">
-        <Layers className="w-4 h-4 text-mint" />
-        Batch Info
+    <section className="card p-5">
+      <div className="mb-3 flex items-center gap-2 text-zinc-400">
+        <Layers className="h-4 w-4 text-emerald-400" />
+        <span className="text-sm font-medium">Batch</span>
       </div>
-      <h3 className="text-white font-semibold">{batch.name || '--'}</h3>
+      <h3 className="text-base font-semibold text-white">{batch.name || '--'}</h3>
+
       {badges.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {badges.map((b, i) => (
-            <span key={i} className={`badge ${b.cls}`}>{b.label}</span>
+            <span key={i} className={`pill border ${b.cls}`}>
+              {b.label}
+            </span>
           ))}
         </div>
       )}
-      <div className="text-xs text-gray-500 space-y-0.5">
-        <div>Batch ID: <span className="text-gray-400 font-mono">{batch.batchId || '--'}</span></div>
+
+      <div className="mt-4 space-y-1 border-t border-white/[0.06] pt-3 text-xs">
+        <div className="flex justify-between">
+          <span className="text-zinc-500">Batch ID</span>
+          <span className="font-mono text-zinc-300">{batch.batchId || '--'}</span>
+        </div>
         {(batch.startDate || batch.endDate) && (
-          <div>
-            Duration: <span className="text-gray-400">{batch.startDate || '?'} &mdash; {batch.endDate || '?'}</span>
+          <div className="flex justify-between">
+            <span className="text-zinc-500">Duration</span>
+            <span className="text-zinc-300">
+              {batch.startDate || '?'} – {batch.endDate || '?'}
+            </span>
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

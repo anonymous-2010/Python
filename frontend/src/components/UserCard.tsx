@@ -1,44 +1,53 @@
-import { UserCircle, Mail, Phone, MapPin } from 'lucide-react';
+import { UserCircle, Mail, Phone, MapPin, Hash } from 'lucide-react';
 import type { User } from '../lib/types';
 
 interface Props {
   user: User | null;
 }
 
-export default function UserCard({ user }: Props) {
-  if (!user) return null;
-
+function Field({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | null }) {
   return (
-    <div className="card-glass rounded-2xl p-5 space-y-3">
-      <div className="flex items-center gap-3">
-        {user.image ? (
-          <img src={user.image} alt={user.name} className="w-10 h-10 rounded-xl object-cover border border-white/10" />
-        ) : (
-          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-            <UserCircle className="w-5 h-5 text-mint" />
-          </div>
-        )}
-        <div>
-          <div className="text-white text-sm font-medium">User Info</div>
-          <div className="text-gray-500 text-xs">{user.name || '--'}</div>
-        </div>
-      </div>
-      <div className="space-y-2 text-xs">
-        <Row icon={<span className="font-mono text-[10px]">ID</span>} label="User ID" value={user.userId} />
-        <Row icon={<Mail className="w-3.5 h-3.5" />} label="Email" value={user.email} />
-        <Row icon={<Phone className="w-3.5 h-3.5" />} label="Phone" value={user.phone} />
-        <Row icon={<MapPin className="w-3.5 h-3.5" />} label="City" value={user.city} />
+    <div className="flex items-center gap-3 py-2">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/[0.04] text-emerald-400/80">
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="field-label">{label}</div>
+        <div className="field-value mt-0.5 truncate">{value || '--'}</div>
       </div>
     </div>
   );
 }
 
-function Row({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+export default function UserCard({ user }: Props) {
+  if (!user) return null;
+
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-mint/60">{icon}</span>
-      <span className="text-gray-500">{label}</span>
-      <span className="text-gray-300 font-mono truncate ml-auto">{value || '--'}</span>
-    </div>
+    <section className="card p-5">
+      <div className="flex items-center gap-3.5 border-b border-white/[0.06] pb-4">
+        {user.image ? (
+          <img
+            src={user.image}
+            alt={user.name || ''}
+            className="h-12 w-12 rounded-2xl border border-white/10 object-cover"
+          />
+        ) : (
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+            <UserCircle className="h-6 w-6 text-emerald-400" />
+          </div>
+        )}
+        <div className="min-w-0">
+          <div className="truncate text-base font-semibold text-white">{user.name || '--'}</div>
+          <div className="text-xs text-zinc-500">Student</div>
+        </div>
+      </div>
+
+      <div className="divide-y divide-white/[0.04] pt-1">
+        <Field icon={<Hash className="h-3.5 w-3.5" />} label="User ID" value={user.userId} />
+        <Field icon={<Mail className="h-3.5 w-3.5" />} label="Email" value={user.email} />
+        <Field icon={<Phone className="h-3.5 w-3.5" />} label="Phone" value={user.phone} />
+        <Field icon={<MapPin className="h-3.5 w-3.5" />} label="City" value={user.city} />
+      </div>
+    </section>
   );
 }

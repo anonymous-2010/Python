@@ -1,31 +1,31 @@
-import { Hash, Clock } from 'lucide-react';
+import { Fingerprint, Clock } from 'lucide-react';
 import type { ScheduleData } from '../lib/types';
 
 interface Props {
   data: ScheduleData;
 }
 
-export default function IdentifiersCard({ data }: Props) {
+function Item({ label, value }: { label: string; value: string | null }) {
   return (
-    <div className="card-glass rounded-2xl p-5">
-      <div className="flex items-center gap-2 text-white text-sm font-medium mb-3">
-        <Hash className="w-4 h-4 text-mint" />
-        Identifiers
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-        <Row label="Schedule ID" value={data.scheduleId} />
-        <Row label="Batch ID" value={data.batchId} />
-        <Row label="Received At" value={data._receivedAt} />
-      </div>
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+      <div className="field-label">{label}</div>
+      <div className="field-value mt-1 break-all">{value || '--'}</div>
     </div>
   );
 }
 
-function Row({ label, value }: { label: string; value: string | null }) {
+export default function IdentifiersCard({ data }: Props) {
   return (
-    <div className="bg-white/3 rounded-lg px-3 py-2">
-      <span className="text-gray-500 block text-[10px] uppercase tracking-wide mb-0.5">{label}</span>
-      <span className="text-gray-300 font-mono text-xs break-all">{value || '--'}</span>
-    </div>
+    <section className="card p-5">
+      <div className="mb-4 flex items-center gap-2 text-zinc-400">
+        <Fingerprint className="h-4 w-4 text-emerald-400" />
+        <span className="text-sm font-medium">Identifiers</span>
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <Item label="Schedule ID" value={data.scheduleId} />
+        <Item label="Batch ID" value={data.batchId} />
+        <Item label="Received" value={data._receivedAt} />
+      </div>
+    </section>
   );
 }
