@@ -21,10 +21,6 @@ body {
 }
 
 @layer components {
-  .card {
-    @apply rounded-2xl border border-white/[0.08] bg-[#0e0e10] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.6)];
-  }
-
   .pill {
     @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
   }

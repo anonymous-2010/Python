@@ -6,26 +6,26 @@ interface Props {
   data: ScheduleData;
 }
 
-function Item({ label, value }: { label: string; value: string | null }) {
-  return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
-      <div className="field-label">{label}</div>
-      <div className="field-value mt-1 break-all">{value || '--'}</div>
-    </div>
-  );
-}
-
 export default function IdentifiersCard({ data }: Props) {
   return (
-    <section className="card p-5">
-      <div className="mb-4 flex items-center gap-2 text-zinc-400">
+    <section className="py-7">
+      <div className="mb-4 flex items-center gap-2 text-zinc-500">
         <Fingerprint className="h-4 w-4 text-emerald-400" />
-        <span className="text-sm font-medium">Identifiers</span>
+        <span className="text-xs font-medium uppercase tracking-wider">Identifiers</span>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Item label="Schedule ID" value={data.scheduleId} />
-        <Item label="Batch ID" value={data.batchId} />
-        <Item label="Received" value={formatDateTime(data._receivedAt)} />
+      <div className="divide-y divide-white/[0.06]">
+        <div className="flex items-center justify-between py-3 text-sm">
+          <span className="text-zinc-500">Schedule ID</span>
+          <span className="break-all text-right font-mono text-zinc-300">{data.scheduleId || '--'}</span>
+        </div>
+        <div className="flex items-center justify-between py-3 text-sm">
+          <span className="text-zinc-500">Batch ID</span>
+          <span className="break-all text-right font-mono text-zinc-300">{data.batchId || '--'}</span>
+        </div>
+        <div className="flex items-center justify-between py-3 text-sm">
+          <span className="text-zinc-500">Received</span>
+          <span className="text-zinc-300">{formatDateTime(data._receivedAt)}</span>
+        </div>
       </div>
     </section>
   );

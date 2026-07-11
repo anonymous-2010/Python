@@ -17,12 +17,12 @@ export default function BatchCard({ batch }: Props) {
   ].filter(Boolean) as { label: string; cls: string }[];
 
   return (
-    <section className="card p-5">
-      <div className="mb-3 flex items-center gap-2 text-zinc-400">
+    <section className="py-7">
+      <div className="mb-1 flex items-center gap-2 text-zinc-500">
         <Layers className="h-4 w-4 text-emerald-400" />
-        <span className="text-sm font-medium">Batch</span>
+        <span className="text-xs font-medium uppercase tracking-wider">Batch</span>
       </div>
-      <h3 className="text-base font-semibold text-white">{batch.name || '--'}</h3>
+      <h3 className="text-lg font-semibold text-white">{batch.name || '--'}</h3>
 
       {badges.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -34,13 +34,13 @@ export default function BatchCard({ batch }: Props) {
         </div>
       )}
 
-      <div className="mt-4 space-y-1 border-t border-white/[0.06] pt-3 text-xs">
-        <div className="flex justify-between">
+      <div className="mt-4">
+        <div className="flex items-center justify-between border-t border-white/[0.06] py-2.5 text-sm">
           <span className="text-zinc-500">Batch ID</span>
           <span className="font-mono text-zinc-300">{batch.batchId || '--'}</span>
         </div>
         {(batch.startDate || batch.endDate) && (
-          <div className="flex justify-between">
+          <div className="flex items-center justify-between border-t border-white/[0.06] py-2.5 text-sm">
             <span className="text-zinc-500">Duration</span>
             <span className="text-zinc-300">
               {batch.startDate || '?'} – {batch.endDate || '?'}

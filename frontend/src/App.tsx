@@ -69,7 +69,7 @@ export default function App() {
               {tab === 'overview' && (
                 <>
                   <LectureCard data={data} />
-                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-x-10 gap-y-0 border-t border-white/[0.06] pt-1 lg:grid-cols-2">
                     <UserCard user={data.user} />
                     <BatchCard batch={data.batch} />
                   </div>
