@@ -147,6 +147,9 @@ def process_raw(raw: dict) -> dict:
     user_name = deep_get(u, "name", "displayName") or ((u.get("firstName") or "") + " " + (u.get("lastName") or "")).strip() or None
     user_id = u.get("_id") or u.get("userId") or u.get("id")
     user_phone = deep_get(u, "phone", "mobile", "phoneNumber", "contactNumber", "mobileNumber")
+    if isinstance(user_phone, dict):
+        parts = [user_phone.get("countryCode"), user_phone.get("number"), user_phone.get("mobile"), user_phone.get("phone")]
+        user_phone = " ".join(p for p in parts if p) or None
     user_city = deep_get(u, "city", "location", "state", "address")
     if isinstance(user_city, dict):
         parts = [user_city.get("city"), user_city.get("state"), user_city.get("pincode")]
