@@ -62,7 +62,10 @@ def build_image(img):
 def strip_html(html):
     if not html:
         return None
-    text = re.sub(r"<[^>]+>", " ", str(html))
+    text = str(html)
+    text = re.sub(r"<style[^>]*>.*?</style>", " ", text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r"<script[^>]*>.*?</script>", " ", text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r"<[^>]+>", " ", text)
     text = re.sub(r"&[a-zA-Z#0-9]+;", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text or None

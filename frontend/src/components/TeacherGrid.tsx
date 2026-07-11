@@ -21,7 +21,14 @@ export default function TeacherGrid({ teachers }: Props) {
           <div key={t.id} className="flex items-center gap-4 py-4">
             <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
               {t.image ? (
-                <img src={t.image} alt={t.name} className="h-full w-full object-cover" />
+                <img
+                  src={t.image}
+                  alt={t.name}
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  }}
+                />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xl font-bold text-emerald-300">
                   {t.name
@@ -36,12 +43,20 @@ export default function TeacherGrid({ teachers }: Props) {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="truncate text-lg font-semibold text-white">{t.name}</span>
-                {t.subjectImage && (
+                {t.subjectImage ? (
                   <img
                     src={t.subjectImage}
                     alt={t.subject}
-                    className="h-6 w-6 shrink-0 rounded-md border border-white/10 object-cover"
+                    title={t.subject}
+                    className="h-7 w-7 shrink-0 rounded-lg border border-white/10 bg-white/5 object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                    }}
                   />
+                ) : (
+                  <span className="pill border border-white/10 bg-white/[0.04] text-zinc-400">
+                    {t.subject}
+                  </span>
                 )}
               </div>
               <div className="truncate text-sm text-zinc-500">{t.subject}</div>

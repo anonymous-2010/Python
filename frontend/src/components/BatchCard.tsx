@@ -1,5 +1,6 @@
 import { Layers } from 'lucide-react';
 import type { Batch } from '../lib/types';
+import { formatDateTime } from '../lib/format';
 
 interface Props {
   batch: Batch | null;
@@ -92,7 +93,7 @@ export default function BatchCard({ batch }: Props) {
           <div className="flex items-center justify-between border-t border-white/[0.06] py-2.5 text-sm">
             <span className="text-zinc-500">Duration</span>
             <span className="text-zinc-300">
-              {batch.startDate || '?'} – {batch.endDate || '?'}
+              {formatDateTime(batch.startDate)} – {formatDateTime(batch.endDate)}
             </span>
           </div>
         )}
