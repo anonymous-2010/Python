@@ -1,4 +1,4 @@
-const API = {
+export const API = {
   schedule: '/api/schedule',
   latest: '/api/latest',
   events: '/api/events',
