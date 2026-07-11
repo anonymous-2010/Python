@@ -1,5 +1,6 @@
-import { Fingerprint, Clock } from 'lucide-react';
+import { Fingerprint } from 'lucide-react';
 import type { ScheduleData } from '../lib/types';
+import { formatDateTime } from '../lib/format';
 
 interface Props {
   data: ScheduleData;
@@ -24,7 +25,7 @@ export default function IdentifiersCard({ data }: Props) {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Item label="Schedule ID" value={data.scheduleId} />
         <Item label="Batch ID" value={data.batchId} />
-        <Item label="Received" value={data._receivedAt} />
+        <Item label="Received" value={formatDateTime(data._receivedAt)} />
       </div>
     </section>
   );

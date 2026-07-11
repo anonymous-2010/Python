@@ -1,28 +1,6 @@
 import { BookOpen, ExternalLink, Calendar, Clock } from 'lucide-react';
 import type { ScheduleData } from '../lib/types';
-
-function fmtDate(d: string | null) {
-  if (!d) return '--';
-  try {
-    return new Date(d).toLocaleDateString('en-IN', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return d;
-  }
-}
-
-function fmtTime(t: string | null) {
-  if (!t) return '';
-  try {
-    return new Date(t).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
-  } catch {
-    return t;
-  }
-}
+import { formatDate, formatTime } from '../lib/format';
 
 function statusStyle(status: string | null, isLive: boolean | null) {
   if (isLive) return { label: 'LIVE', cls: 'bg-rose-500/15 text-rose-300 border-rose-500/30' };
@@ -95,15 +73,15 @@ export default function LectureCard({ data }: Props) {
             <div className="field-label flex items-center gap-1.5">
               <Calendar className="h-3 w-3" /> Date
             </div>
-            <div className="field-value mt-1">{fmtDate(data.date)}</div>
+            <div className="field-value mt-1">{formatDate(data.date)}</div>
           </div>
           <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
             <div className="field-label flex items-center gap-1.5">
               <Clock className="h-3 w-3" /> Time
             </div>
             <div className="field-value mt-1">
-              {fmtTime(data.startTime)}
-              {data.endTime ? ` – ${fmtTime(data.endTime)}` : ''}
+              {formatTime(data.startTime)}
+              {data.endTime ? ` – ${formatTime(data.endTime)}` : ''}
             </div>
           </div>
         </div>

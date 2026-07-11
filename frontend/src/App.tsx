@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { API, fetchLatest } from './lib/api';
 import type { ScheduleData } from './lib/types';
-import Header from './components/Header';
+import Sidebar, { TabKey } from './components/Sidebar';
 import LectureCard from './components/LectureCard';
 import UserCard from './components/UserCard';
 import BatchCard from './components/BatchCard';
@@ -12,6 +12,7 @@ import NoLecture from './components/NoLecture';
 export default function App() {
   const [data, setData] = useState<ScheduleData | null>(null);
   const [connected, setConnected] = useState<'connecting' | 'live' | 'disconnected'>('connecting');
+  const [tab, setTab] = useState<TabKey>('overview');
   const esRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
@@ -56,33 +57,34 @@ export default function App() {
   const noLecture = !data || data._lectureState === 'closed' || !data.scheduleId;
 
   return (
-    <div className="min-h-screen">
-      <Header connected={connected} />
+    <div className="flex min-h-screen flex-col md:flex-row">
+      <Sidebar active={tab} onChange={setTab} connected={connected} />
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
-        {noLecture ? (
-          <NoLecture />
-        ) : (
-          <div className="space-y-5 fade-in">
-            <LectureCard data={data} />
-
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-              <UserCard user={data.user} />
-              <BatchCard batch={data.batch} />
+      <main className="flex-1">
+        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 md:py-8">
+          {noLecture ? (
+            <NoLecture />
+          ) : (
+            <div className="space-y-5 fade-in" key={tab}>
+              {tab === 'overview' && (
+                <>
+                  <LectureCard data={data} />
+                  <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    <UserCard user={data.user} />
+                    <BatchCard batch={data.batch} />
+                  </div>
+                </>
+              )}
+              {tab === 'faculty' && <TeacherGrid teachers={data.teachers} />}
+              {tab === 'identifiers' && <IdentifiersCard data={data} />}
             </div>
+          )}
+        </div>
 
-            <TeacherGrid teachers={data.teachers} />
-
-            <IdentifiersCard data={data} />
-          </div>
-        )}
+        <footer className="mx-auto w-full max-w-3xl px-4 pb-8 pt-2 text-center text-xs text-zinc-600 sm:px-6">
+          PW Sync · {connected === 'live' ? 'Streaming live' : 'Reconnecting…'}
+        </footer>
       </main>
-
-      <footer className="mx-auto w-full max-w-5xl px-4 pb-10 pt-2 sm:px-6">
-        <p className="text-center text-xs text-zinc-600">
-          PW Sync · Real-time lecture monitor · {connected === 'live' ? 'Streaming live' : 'Reconnecting…'}
-        </p>
-      </footer>
     </div>
   );
 }
