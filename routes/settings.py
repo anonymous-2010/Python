@@ -12,12 +12,40 @@ def create_settings_routes(app, supabase: Client):
     @app.get("/api/server-status")
     async def server_status():
         try:
-            result = supabase.table("serverstatus").select("is_active").limit(1).execute()
+            result = supabase.table("serverstatus").select("*").limit(1).execute()
             if result.data:
-                return {"active": result.data[0].get("is_active", True)}
-            return {"active": True}
+                data = result.data[0]
+                return {
+                    "active": data.get("is_active", True),
+                    "platformCheck": data.get("platform_check", True),
+                }
+            return {"active": True, "platformCheck": True}
         except Exception:
-            return {"active": True}
+            return {"active": True, "platformCheck": True}
+
+    @app.post("/api/admin/toggle-maintenance")
+    async def toggle_maintenance(request: Request):
+        if request.headers.get("admin-portal") != "true":
+            return JSONResponse({"error": "You bastard get lost"}, status_code=403)
+        body = await request.json()
+        active = body.get("active", True)
+        try:
+            supabase.table("serverstatus").update({"is_active": active}).neq("id", 0).execute()
+            return JSONResponse({"success": True})
+        except Exception as e:
+            return JSONResponse({"success": False, "message": str(e)}, status_code=500)
+
+    @app.post("/api/admin/toggle-platform-check")
+    async def toggle_platform_check(request: Request):
+        if request.headers.get("admin-portal") != "true":
+            return JSONResponse({"error": "You bastard get lost"}, status_code=403)
+        body = await request.json()
+        enabled = body.get("enabled", True)
+        try:
+            supabase.table("serverstatus").update({"platform_check": enabled}).neq("id", 0).execute()
+            return JSONResponse({"success": True})
+        except Exception as e:
+            return JSONResponse({"success": False, "message": str(e)}, status_code=500)
 
     @app.get("/api/download-link")
     async def get_download_link():

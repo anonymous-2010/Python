@@ -15,6 +15,7 @@ import InstallExtension from './components/InstallExtension';
 import GuideMe from './components/GuideMe';
 import Polls from './components/Polls';
 import ContactUs from './components/ContactUs';
+import PlatformBlock from './components/PlatformBlock';
 
 export default function App() {
   const [userId, setUserId] = useState<string | null>(() => localStorage.getItem('pw_user_id'));
@@ -23,9 +24,20 @@ export default function App() {
   const [connected, setConnected] = useState<'connecting' | 'live' | 'disconnected'>('connecting');
   const [tab, setTab] = useState<TabKey>('overview');
   const [serverActive, setServerActive] = useState<boolean | null>(null);
+  const [platformCheck, setPlatformCheck] = useState(true);
   const [extensionInstalled, setExtensionInstalled] = useState<boolean | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const esRef = useRef<EventSource | null>(null);
+
+  // Platform detection
+  const ua = navigator.userAgent.toLowerCase();
+  const isMobile = /android|iphone|ipad|ipod|mobile|windows phone/i.test(ua);
+  const isDesktop = !isMobile;
+  const platformName = /android/i.test(ua) ? 'Android' :
+    /iphone|ipad|ipod/i.test(ua) ? 'iOS / iPad' :
+    /windows/i.test(ua) ? 'Windows' :
+    /macintosh|mac os x/i.test(ua) ? 'macOS' :
+    /linux/i.test(ua) ? 'Linux' : 'Unknown';
 
   // Check server status
   async function checkServerStatus() {
@@ -33,6 +45,7 @@ export default function App() {
       const res = await fetch('/api/server-status');
       const d = await res.json();
       setServerActive(d.active);
+      setPlatformCheck(d.platformCheck !== false);
     } catch {
       setServerActive(false);
     }
@@ -139,6 +152,11 @@ export default function App() {
 
   if (!userId) {
     return <Login onLogin={(id, name) => { setUserId(id); setUsername(name); }} />;
+  }
+
+  // Block mobile users after login (if platform check is enabled)
+  if (isMobile && platformCheck) {
+    return <PlatformBlock platform={platformName} />;
   }
 
   function handleLogout() {
