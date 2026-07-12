@@ -272,6 +272,18 @@ export default function Polls(props: Props) {
             <Zap size={16} className="text-green" />
             <span className="text-[10px] font-bold uppercase tracking-wider text-green">Active Poll</span>
             <span className="text-[10px] text-text-muted">#{activePoll.seqNumber}</span>
+            {activePoll.type === 'single' && (
+              <span className="px-2 py-0.5 rounded-full bg-green-dim border border-green-border text-[10px] font-bold text-green">Single Choice</span>
+            )}
+            {activePoll.type === 'multiple' && (
+              <span className="px-2 py-0.5 rounded-full bg-blue-dim border border-blue-border text-[10px] font-bold text-blue">Multiple Choice</span>
+            )}
+            {activePoll.type === 'vote' && (
+              <span className="px-2 py-0.5 rounded-full bg-amber-dim border border-amber/20 text-[10px] font-bold text-amber">Vote</span>
+            )}
+            {activePoll.type === 'integer' && (
+              <span className="px-2 py-0.5 rounded-full bg-red-dim border border-red/20 text-[10px] font-bold text-red">Integer</span>
+            )}
           </div>
 
           <div className="rounded-2xl border border-green-border bg-gradient-to-br from-green-dim via-bg-card to-bg-card p-6 relative overflow-hidden">
