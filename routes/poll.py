@@ -89,7 +89,13 @@ def create_poll_routes(app, supabase: Client):
                     timeout=10,
                 )
                 data = resp.json()
-                return JSONResponse({"success": data.get("success", False), "message": data.get("message", "")})
+                msg = data.get("message", "")
+                is_already = "already" in msg.lower()
+                return JSONResponse({
+                    "success": data.get("success", False),
+                    "message": msg,
+                    "alreadyAnswered": is_already,
+                })
         except Exception as e:
             return JSONResponse({"success": False, "message": str(e)}, status_code=500)
 
@@ -99,6 +105,7 @@ def create_poll_routes(app, supabase: Client):
         user_id = body.get("userId")
         auto_answer = body.get("autoAnswer", False)
         preferred_option = body.get("preferredOption", 1)
+        auto_answer_delay = body.get("autoAnswerDelay", 0)
 
         if not user_id:
             return JSONResponse({"success": False, "message": "userId required"}, status_code=400)
@@ -108,6 +115,7 @@ def create_poll_routes(app, supabase: Client):
                 "user_id": user_id,
                 "auto_answer": auto_answer,
                 "preferred_option": preferred_option,
+                "auto_answer_delay": auto_answer_delay,
             }, on_conflict="user_id").execute()
             return JSONResponse({"success": True})
         except Exception as e:
@@ -117,7 +125,7 @@ def create_poll_routes(app, supabase: Client):
     async def get_poll_settings(request: Request):
         user_id = request.headers.get("X-User-Id") or request.query_params.get("userId")
         if not user_id:
-            return {"autoAnswer": False, "preferredOption": 1}
+            return {"autoAnswer": False, "preferredOption": 1, "autoAnswerDelay": 0}
 
         try:
             result = supabase.table("poll_settings").select("*").eq("user_id", user_id).execute()
@@ -126,8 +134,9 @@ def create_poll_routes(app, supabase: Client):
                 return {
                     "autoAnswer": settings.get("auto_answer", False),
                     "preferredOption": settings.get("preferred_option", 1),
+                    "autoAnswerDelay": settings.get("auto_answer_delay", 0),
                 }
         except Exception:
             pass
 
-        return {"autoAnswer": False, "preferredOption": 1}
+        return {"autoAnswer": False, "preferredOption": 1, "autoAnswerDelay": 0}

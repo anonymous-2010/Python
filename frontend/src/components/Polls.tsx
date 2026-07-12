@@ -55,6 +55,7 @@ export default function Polls(props: Props) {
   const [history, setHistory] = useState<PollHistoryItem[]>([]);
   const [autoAnswer, setAutoAnswer] = useState(false);
   const [preferredOption, setPreferredOption] = useState(1);
+  const [autoAnswerDelay, setAutoAnswerDelay] = useState(0);
   const [answered, setAnswered] = useState<string | null>(null);
   const [timer, setTimer] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -146,6 +147,7 @@ export default function Polls(props: Props) {
       .then(d => {
         setAutoAnswer(d.autoAnswer || false);
         setPreferredOption(d.preferredOption || 1);
+        setAutoAnswerDelay(d.autoAnswerDelay || 0);
       })
       .catch(() => {});
   }, [userId]);
@@ -165,10 +167,12 @@ export default function Polls(props: Props) {
     return () => clearInterval(interval);
   }, [activePoll, pollStatus]);
 
-  // Auto-answer
+  // Auto-answer with delay
   useEffect(() => {
     if (activePoll && autoAnswer && !answered && pollStatus === 'active') {
-      submitAnswer(preferredOption);
+      const delayMs = Math.max(0, Math.min(100000, autoAnswerDelay * 1000));
+      const timer = setTimeout(() => submitAnswer(preferredOption), delayMs);
+      return () => clearTimeout(timer);
     }
   }, [activePoll]);
 
@@ -184,13 +188,23 @@ export default function Polls(props: Props) {
     setSubmitting(true);
     setPollStatus('waiting');
     try {
-      await fetch(API.pollAnswer, {
+      const res = await fetch(API.pollAnswer, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, pollId: activePoll.pollId, optionId: optionIndex }),
       });
+      const data = await res.json();
+      if (data.alreadyAnswered || !res.ok) {
+        setToast('Already answered this poll');
+      } else if (data.success) {
+        setToast('Answer submitted!');
+      } else {
+        setToast(data.message || 'Failed to submit');
+      }
       setAnswered(activePoll.pollId);
-    } catch {}
+    } catch {
+      setToast('Network error');
+    }
     setSubmitting(false);
   }
 
@@ -200,7 +214,7 @@ export default function Polls(props: Props) {
       await fetch(API.pollSettings, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, autoAnswer, preferredOption }),
+        body: JSON.stringify({ userId, autoAnswer, preferredOption, autoAnswerDelay }),
       });
       setToast('Settings saved successfully!');
     } catch {
@@ -378,7 +392,7 @@ export default function Polls(props: Props) {
           {autoAnswer && (
             <div className="mt-4">
               <div className="text-xs font-semibold text-text-dim mb-3">Preferred Option</div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mb-4">
                 {options.map((opt, i) => (
                   <button
                     key={opt}
@@ -393,6 +407,30 @@ export default function Polls(props: Props) {
                   </button>
                 ))}
               </div>
+
+              <div className="text-xs font-semibold text-text-dim mb-2">Answer Delay (seconds)</div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={autoAnswerDelay}
+                  onChange={(e) => setAutoAnswerDelay(parseFloat(e.target.value))}
+                  className="flex-1 h-2 rounded-full appearance-none bg-white/[0.06] cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-green [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-green/30"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={autoAnswerDelay}
+                  onChange={(e) => setAutoAnswerDelay(parseFloat(e.target.value) || 0)}
+                  className="w-20 bg-bg-raised border border-border rounded-lg px-3 py-1.5 text-sm text-text font-mono text-center focus:outline-none focus:border-green-border"
+                />
+                <span className="text-xs text-text-muted">s</span>
+              </div>
+              <div className="text-[10px] text-text-muted mt-1">0 = instant, 100 = max delay</div>
             </div>
           )}
 
