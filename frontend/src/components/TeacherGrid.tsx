@@ -1,71 +1,80 @@
-import { Users } from 'lucide-react';
+import { Users, Star, BookOpen } from 'lucide-react';
 import type { Teacher } from '../lib/types';
 
-interface Props {
-  teachers: Teacher[];
+interface Props { teachers: Teacher[] }
+
+function initials(name: string) {
+  return name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
 export default function TeacherGrid({ teachers }: Props) {
   if (!teachers.length) return null;
 
   return (
-    <section className="py-7">
-      <div className="mb-4 flex items-center gap-2 text-zinc-500">
-        <Users className="h-5 w-5 text-emerald-400" />
-        <span className="text-sm font-semibold uppercase tracking-wider">Faculty</span>
-        <span className="pill bg-white/[0.04] text-zinc-400 border-white/10">{teachers.length}</span>
+    <section className="py-4">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <div className="flex items-center gap-2.5 mb-1">
+            <Users size={20} className="text-green" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-text-muted">Faculty</span>
+          </div>
+          <h2 className="text-3xl font-bold text-text mt-2">Teaching Team</h2>
+          <p className="text-base text-text-dim mt-1">{teachers.length} faculty members across all subjects</p>
+        </div>
+        <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-bg-card">
+          <BookOpen size={15} className="text-green" />
+          <span className="text-sm font-semibold text-text-dim">{teachers.length} Members</span>
+        </div>
       </div>
 
-      <div className="divide-y divide-white/[0.06]">
-        {teachers.map((t) => (
-          <div key={t.id} className="flex items-center gap-4 py-4">
-            <div className="h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-              {t.image ? (
-                <img
-                  src={t.image}
-                  alt={t.name}
-                  className="h-full w-full object-cover"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-xl font-bold text-emerald-300">
-                  {t.name
-                    .split(' ')
-                    .map((w) => w[0])
-                    .join('')
-                    .slice(0, 2)
-                    .toUpperCase()}
+      <div className="flex flex-col gap-4">
+        {teachers.map((t, i) => (
+          <div
+            key={t.id}
+            className="group p-6 rounded-2xl border border-border bg-bg-card hover-glow transition-all duration-300"
+          >
+            <div className="flex items-center gap-6">
+              <div className="relative flex-shrink-0">
+                <div className="absolute inset-0 rounded-2xl bg-green/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-border-light bg-bg-raised">
+                  {t.image ? (
+                    <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl font-black text-green">
+                      {initials(t.name)}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="truncate text-lg font-semibold text-white">{t.name}</span>
-                {t.subjectImage ? (
-                  <img
-                    src={t.subjectImage}
-                    alt={t.subject}
-                    title={t.subject}
-                    className="h-7 w-7 shrink-0 rounded-lg border border-white/10 bg-white/5 object-cover"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <span className="pill border border-white/10 bg-white/[0.04] text-zinc-400">
-                    {t.subject}
-                  </span>
+                {i === 0 && (
+                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-green flex items-center justify-center shadow-lg shadow-green/30">
+                    <Star size={12} className="text-[#021a0e]" fill="#021a0e" />
+                  </div>
                 )}
               </div>
-              <div className="truncate text-sm text-zinc-500">{t.subject}</div>
-              {t.qualification && (
-                <div className="mt-0.5 truncate text-xs text-zinc-500">{t.qualification}</div>
-              )}
-              {t.experience && (
-                <div className="text-xs text-zinc-600">{t.experience} yrs experience</div>
-              )}
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-2xl font-bold text-text group-hover:text-green-bright transition-colors duration-300">{t.name}</h3>
+                  {t.subjectImage && (
+                    <img src={t.subjectImage} alt={t.subject} className="w-10 h-10 rounded-xl border border-border-light bg-bg-raised object-cover" />
+                  )}
+                </div>
+                <p className="text-base text-green font-medium mt-1">{t.subject}</p>
+                <div className="flex items-center gap-4 mt-3 flex-wrap">
+                  {t.qualification && (
+                    <div className="flex items-center gap-1.5 text-sm text-text-dim">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green/50" />
+                      {t.qualification}
+                    </div>
+                  )}
+                  {t.experience && (
+                    <div className="flex items-center gap-1.5 text-sm text-text-dim">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green/50" />
+                      {t.experience} yrs experience
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         ))}

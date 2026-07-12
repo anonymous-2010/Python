@@ -39,8 +39,24 @@ export interface User {
   name: string;
   phone: string;
   city: string;
+  state: string | null;
+  pincode: string | null;
   email: string;
   image: string | null;
+  username: string | null;
+  uniqueCode: string | null;
+  class: string | null;
+  board: string | null;
+  exams: string[];
+  wallet: number | null;
+  totalRewards: number | null;
+  coins: Record<string, number> | null;
+  isProfileCompleted: boolean | null;
+  createdAt: string | null;
+  isVerifiedEmail: boolean | null;
+  isScholar: boolean | null;
+  roles: string[];
+  orgName: string | null;
 }
 
 export interface LectureTeacher {
@@ -69,4 +85,5 @@ export interface ScheduleData {
   batch: Batch | null;
   teachers: Teacher[];
   user: User | null;
+  token: string | null;
 }

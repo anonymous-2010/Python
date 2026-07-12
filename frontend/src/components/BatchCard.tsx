@@ -1,99 +1,143 @@
-import { Layers } from 'lucide-react';
+import { Layers, Calendar, Globe, BookOpen, Tag, Hash } from 'lucide-react';
 import type { Batch } from '../lib/types';
 import { formatDateTime } from '../lib/format';
 
-interface Props {
-  batch: Batch | null;
+interface Props { batch: Batch | null }
+
+function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | null }) {
+  if (!value) return null;
+  return (
+    <div className="flex items-center gap-4 py-4 border-b border-border group">
+      <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-bg-card border border-border text-text-muted group-hover:border-green-border group-hover:text-green/60 transition-all duration-300 flex-shrink-0">
+        {icon}
+      </div>
+      <span className="text-base text-text-dim w-24">{label}</span>
+      <span className="ml-auto text-base font-medium text-text truncate max-w-[300px] group-hover:text-green-bright/90 transition-colors duration-300">{value}</span>
+    </div>
+  );
 }
 
 export default function BatchCard({ batch }: Props) {
   if (!batch) return null;
-
-  const badges = [
-    batch.class && { label: batch.class, cls: 'bg-blue-500/10 text-blue-300 border-blue-500/20' },
-    batch.exam && { label: batch.exam, cls: 'bg-purple-500/10 text-purple-300 border-purple-500/20' },
-    batch.language && { label: batch.language, cls: 'bg-amber-500/10 text-amber-300 border-amber-500/20' },
-    batch.mode && { label: batch.mode, cls: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20' },
-    batch.status && { label: batch.status, cls: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' },
-  ].filter(Boolean) as { label: string; cls: string }[];
-
   const fee = batch.fee;
 
   return (
-    <section className="py-7">
+    <section>
+      {/* Banner */}
       {batch.previewImage && (
-        <div className="mb-5 h-44 w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-white/5">
-          <img src={batch.previewImage} alt={batch.name} className="h-full w-full object-cover" />
+        <div className="relative w-full h-72 sm:h-96 lg:h-[28rem] rounded-2xl overflow-hidden border border-border mb-8">
+          <img
+            src={batch.previewImage}
+            alt={batch.name}
+            className="w-full h-full object-cover"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-transparent" />
+          <div className="absolute bottom-5 left-6 right-6">
+            <div className="flex items-center gap-2.5 mb-2">
+              {batch.isPurchased && (
+                <span className="rounded-full bg-green/90 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#021a0e]">Owned</span>
+              )}
+              {batch.status && (
+                <span className="rounded-full bg-black/50 backdrop-blur-sm border border-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white/80">{batch.status}</span>
+              )}
+            </div>
+            <h2 className="text-3xl font-black text-white leading-tight drop-shadow-lg">{batch.name || '—'}</h2>
+            {batch.byName && <p className="text-base text-white/70 mt-1">{batch.byName}</p>}
+          </div>
         </div>
       )}
 
-      <div className="mb-1 flex items-center gap-2 text-zinc-500">
-        <Layers className="h-4 w-4 text-emerald-400" />
-        <span className="text-xs font-medium uppercase tracking-wider">Batch</span>
+      {/* No banner fallback */}
+      {!batch.previewImage && (
+        <>
+          <div className="flex items-center gap-2.5 mb-2">
+            <Layers size={20} className="text-green" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-text-muted">Batch Information</span>
+          </div>
+          <h2 className="text-3xl font-bold text-text mb-1">{batch.name || '—'}</h2>
+          {batch.byName && <p className="text-base text-text-dim mb-8">{batch.byName}</p>}
+          {!batch.byName && <div className="mb-8" />}
+          <div className="flex items-center gap-2.5 mb-8">
+            {batch.isPurchased && (
+              <span className="rounded-full bg-green-dim border border-green-border px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-green">Owned</span>
+            )}
+            {batch.status && (
+              <span className="rounded-full bg-bg-card border border-border px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-text-dim">{batch.status}</span>
+            )}
+            {batch.mode && (
+              <span className="rounded-full bg-bg-card border border-border px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-text-dim">{batch.mode}</span>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Core info */}
+      <div className="mb-8">
+        <div className="text-xs font-bold uppercase tracking-[0.2em] text-text-muted mb-4">Details</div>
+        <InfoRow icon={<BookOpen size={15} />} label="Class" value={batch.class} />
+        <InfoRow icon={<Tag size={15} />} label="Exam" value={batch.exam} />
+        <InfoRow icon={<Globe size={15} />} label="Language" value={batch.language} />
+        <InfoRow icon={<Layers size={15} />} label="Program" value={batch.program || null} />
+        <InfoRow icon={<Hash size={15} />} label="Code" value={batch.batchCode || null} />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <h3 className="text-lg font-semibold text-white">{batch.name || '--'}</h3>
-        {batch.isPurchased && (
-          <span className="pill border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">Owned</span>
-        )}
+      {/* Subjects count */}
+      <div className="mb-8">
+        <div className="text-xs font-bold uppercase tracking-[0.2em] text-text-muted mb-4">Subjects</div>
+        <div className="text-5xl font-black text-text">{batch.subjectCount ?? '—'}</div>
+        <p className="text-base text-text-dim mt-1">subjects in this batch</p>
       </div>
 
-      {batch.byName && <p className="mt-1 text-sm text-zinc-400">{batch.byName}</p>}
+      <div className="glow-line" />
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        {badges.map((b, i) => (
-          <span key={i} className={`pill border ${b.cls}`}>
-            {b.label}
-          </span>
-        ))}
-        {batch.batchCode && (
-          <span className="pill border border-white/10 bg-white/[0.04] text-zinc-400">{batch.batchCode}</span>
-        )}
-        {batch.subjectCount != null && (
-          <span className="pill border border-white/10 bg-white/[0.04] text-zinc-400">
-            {batch.subjectCount} subjects
-          </span>
-        )}
-        {batch.program && (
-          <span className="pill border border-white/10 bg-white/[0.04] text-zinc-400">{batch.program}</span>
-        )}
-      </div>
-
+      {/* Price */}
       {fee && (
-        <div className="mt-4 flex items-center gap-2 text-sm">
-          <span className="text-lg font-semibold text-white">
-            ₹{Math.round(fee.total).toLocaleString('en-IN')}
-          </span>
-          {fee.amount && fee.amount !== fee.total && (
-            <span className="text-zinc-500 line-through">
-              ₹{Math.round(fee.amount).toLocaleString('en-IN')}
+        <div className="py-6">
+          <div className="text-xs font-bold uppercase tracking-[0.2em] text-text-muted mb-4">Pricing</div>
+          <div className="flex items-center gap-4">
+            <span className="text-4xl font-black text-text">
+              {'\u20B9'}{Math.round(fee.total).toLocaleString('en-IN')}
             </span>
-          )}
-          {fee.discount ? (
-            <span className="pill border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
-              {fee.discount}% off
-            </span>
-          ) : null}
+            {fee.amount && fee.amount !== fee.total && (
+              <span className="text-lg text-text-muted line-through">
+                {'\u20B9'}{Math.round(fee.amount).toLocaleString('en-IN')}
+              </span>
+            )}
+            {fee.discount && (
+              <span className="rounded-full bg-green-dim border border-green-border px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-green">
+                {fee.discount}% off
+              </span>
+            )}
+          </div>
         </div>
       )}
 
+      <div className="glow-line" />
+
+      {/* Description */}
       {batch.description && (
-        <p className="mt-4 line-clamp-4 max-w-2xl text-sm leading-relaxed text-zinc-500">
-          {batch.description}
-        </p>
+        <div className="py-6">
+          <div className="text-xs font-bold uppercase tracking-[0.2em] text-text-muted mb-4">Description</div>
+          <div className="rounded-xl border border-border bg-bg-card p-6">
+            <p className="text-base leading-[1.9] text-text-dim whitespace-pre-line">{batch.description}</p>
+          </div>
+        </div>
       )}
 
-      <div className="mt-4">
-        <div className="flex items-center justify-between border-t border-white/[0.06] py-2.5 text-sm">
-          <span className="text-zinc-500">Batch ID</span>
-          <span className="font-mono text-zinc-300">{batch.batchId || '--'}</span>
-        </div>
+      <div className="glow-line" />
+
+      {/* Meta */}
+      <div className="py-4">
+        <InfoRow icon={<Hash size={15} />} label="Batch ID" value={batch.batchId} />
         {(batch.startDate || batch.endDate) && (
-          <div className="flex items-center justify-between border-t border-white/[0.06] py-2.5 text-sm">
-            <span className="text-zinc-500">Duration</span>
-            <span className="text-zinc-300">
-              {formatDateTime(batch.startDate)} – {formatDateTime(batch.endDate)}
+          <div className="flex items-center gap-4 py-4 border-b border-border group">
+            <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-bg-card border border-border text-text-muted flex-shrink-0">
+              <Calendar size={15} />
+            </div>
+            <span className="text-base text-text-dim w-24">Duration</span>
+            <span className="ml-auto text-base font-medium text-text">
+              {formatDateTime(batch.startDate || null)}  –  {formatDateTime(batch.endDate || null)}
             </span>
           </div>
         )}
